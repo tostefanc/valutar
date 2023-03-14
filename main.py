@@ -16,32 +16,20 @@ def main():
     soup = bs(r.text, 'html.parser')
     table_currency = soup.find(id="tabelBankValute")
 
-    def find_average_value_vanzare():
+    def find_average_value_action(action):
         nr_banci = len(table_currency.tbody.find_all('th'))
-        valori_vanzare_raw = table_currency.tbody.select("tr > td:nth-of-type(3)")
+        valori_vanzare_raw = table_currency.tbody.select(f"tr > td:nth-of-type({action})")
         total_valori_vanzare = 0
 
         for valoare in valori_vanzare_raw:
-            # print(float(valoare.text))
-            total_valori_vanzare += float(valoare.text)
-
-        return round(total_valori_vanzare / nr_banci, 2)
-
-    def find_average_value_cumparare():
-        nr_banci = len(table_currency.tbody.find_all('th'))
-        valori_vanzare_raw = table_currency.tbody.select("tr > td:nth-of-type(2)")
-        total_valori_vanzare = 0
-
-        for valoare in valori_vanzare_raw:
-            # print(float(valoare.text))
             total_valori_vanzare += float(valoare.text)
 
         return round(total_valori_vanzare / nr_banci, 2)
 
     html_body = f"""
     <br/>
-    <h3> Media vanzare: {find_average_value_vanzare()} </h3>
-    <h3> Media cumparare: {find_average_value_cumparare()} </h3>
+    <h3> Media vanzare: {find_average_value_action(3)} </h3>
+    <h3> Media cumparare: {find_average_value_action(2)} </h3>
     <br/>
     <table class="column" style="border-spacing:0;width:100%;max-width:500px;vertical-align:top;display:inline-block;">
     {table_currency.thead}
