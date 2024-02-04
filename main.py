@@ -107,7 +107,7 @@ def main():
             receivers = sec.email_receiver
         return receivers
 
-    def send_the_lobster_articles(body_contents):
+    def send_the_email(body_contents):
         em = MIMEMultipart()
         em['From'] = sec.email_sender
         em['To'] = all_receivers()
@@ -120,7 +120,7 @@ def main():
             smtp.login(sec.email_sender, sec.email_sender_password)
             smtp.sendmail(sec.email_sender, sec.email_receiver, em.as_string())
 
-    send_the_lobster_articles(html_body)
+    send_the_email(html_body)
 
 
 if __name__ == '__main__':
