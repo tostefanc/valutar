@@ -2,6 +2,7 @@
 
 import smtplib
 import ssl
+import sys
 import sec  # Local secrets
 from datetime import datetime as dt
 from email.mime.multipart import MIMEMultipart
@@ -14,8 +15,12 @@ def main():
     r = requests.get("https://convertor-valutare.ro/curs-valutar-banci")
 
     soup = bs(r.text, 'html.parser')
+    tr_elements = soup.find_all(id='tabelBankValute')
     table_currency = soup.find(id="tabelBankValute")
 
+    # Check if the table on convertor-valutare is empty
+    if tr_elements[0].find_all('tr') == 1:
+        sys.exit("[Error] Table might be empty on the website")
     def find_average_value_action(action):
         nr_banci = len(table_currency.tbody.find_all('th'))
         valori_vanzare_raw = table_currency.tbody.select(f"tr > td:nth-of-type({action})")
@@ -59,38 +64,38 @@ def main():
     min_max_cumparare = get_min_max_values(2)
 
     html_body = f"""
-    
+
     <h2> Vanzare: </h2>
     <h4>&nbsp; &nbsp; Media vanzare: {find_average_value_action(3)} </h4>
     <h4>&nbsp; &nbsp;
-        Valoarea maxima: {min_max_vanzare['max_values']['value']} 
-        este la: 
-        {min_max_vanzare['max_values']['bank']} 
+        Valoarea maxima: {min_max_vanzare['max_values']['value']}
+        este la:
+        {min_max_vanzare['max_values']['bank']}
     </h4>
-    
+
     <h4>&nbsp; &nbsp;
-        Valoarea minima: {min_max_vanzare['min_values']['value']} 
-        este la: 
-        {min_max_vanzare['min_values']['bank']} 
+        Valoarea minima: {min_max_vanzare['min_values']['value']}
+        este la:
+        {min_max_vanzare['min_values']['bank']}
     </h4>
     <br/>
-    
+
     <h2> Cumparare: </h2>
     <h4>&nbsp; &nbsp; Media cumparare: {find_average_value_action(2)} </h4>
     <h4>&nbsp; &nbsp;
-        Valoarea maxima: {min_max_cumparare['max_values']['value']} 
-        este la: 
-        {min_max_cumparare['max_values']['bank']} 
+        Valoarea maxima: {min_max_cumparare['max_values']['value']}
+        este la:
+        {min_max_cumparare['max_values']['bank']}
     </h4>
-    <h4>&nbsp; &nbsp; 
-        Valoarea minima: {min_max_cumparare['min_values']['value']} 
-        este la: 
-        {min_max_cumparare['min_values']['bank']} 
+    <h4>&nbsp; &nbsp;
+        Valoarea minima: {min_max_cumparare['min_values']['value']}
+        este la:
+        {min_max_cumparare['min_values']['bank']}
     </h4>
-    
+
     <br/>
     <br/>
-    
+
     <table class="column" style="border-spacing:0;width:100%;max-width:500px;vertical-align:top;display:inline-block;">
     {table_currency.thead}
     {table_currency.tbody}
